@@ -1,9 +1,7 @@
 # Introduction to Bioinformatics
 *Curriculum for an introduction to bioinformatics course with lab sections and material. Project is an extension of Teaching Seminar PBIO 8010 at University of Georgia, taught by Peggy Brickman.*
 
-Michelle Hwang
-
-(Future link to Syllabus on website here)
+Michelle Hwang | [Syllabus](https://github.com/michelle-hwang/intro-to-bioinformatics/wiki/Syllabus)
 
 Statistic | Description 
 --- | --- 
