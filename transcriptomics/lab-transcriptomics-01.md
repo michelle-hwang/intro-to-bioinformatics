@@ -13,28 +13,35 @@ categories:
 
 <br>
 
-Today we will be assembling a transcriptome and assessing its assembly quality via several different strategies. 
+Today we will be assembling a transcriptome and assessing its assembly quality via several different strategies. Please login to your Sapelo computing cluster account, start an interactive job, and create a new folder ```transcriptomics-lab```. 
+
+* Q1. Why do we need to first start with an interactive job on the cluster?
 
 ## Data Acquisition
 
-We will be looking at Arabidopsis thaliana data because it has a smaller genome and will take less time in computational processes. The [data](https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP063471) is a single-end Illumina sequencing set with samples treated under salt stress, heat stress, and both. To simplify this, will only download the 3 control samples and the 3 heat stress samples. Each sample is about 3.5GB. You can download the SRA files from NCBI using sratoolkit:
+We will be looking at Arabidopsis thaliana data because it has a smaller genome and will take less time in computational processes. The [data](https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP063471) is a single-end Illumina sequencing set with samples treated under salt stress, heat stress, and both. To simplify this, will only download the 2 control samples and the 2 heat stress samples. Each sample is about 3.5GB. You can download the SRA files from NCBI using sratoolkit:
 
 ```
 module load sratoolkit
 
-for f in SRR2302908 SRR2302909 SRR2302910 SRR2302914 SRR2302915 SRR2302916; do
+for f in SRR2302908 SRR2302909 SRR2302914 SRR2302915; do
 	fastq-dump $f
 done
 ```
-This will take some time, since the files are large. They are currently in *.fastq* format. 
+This will take some time, since the files are large. They are currently in *.fastq* format. The first two files are the control samples, and the last two files are the samples under heat stress. Please rename the files to: "Ctrl-1", "Ctrl-2", "Heat-1", and "Heat-2". 
 
-* Q1. What is the difference between *.fastq* and *.fasta* format?
-* Q2. How do we determine how many sequences are in each file? How many sequences are in each file?
-
+* Q2. What command did you use to rename the files?
+* Q3. What is the difference between *.fastq* and *.fasta* format?
+* Q4. How do we determine how many sequences are in each file? How many sequences are in each file?
 
 ## Transcriptome Assembly
 
+### Assembly Preparation
+
+### Running the Assembly
+
 We will be using [Trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki) to generate a transcriptome assembly. 
+
 
 ## Assembly Assessment
 
