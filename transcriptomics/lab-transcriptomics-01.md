@@ -6,6 +6,8 @@ categories:
 
 # Transcriptomics Lab
 
+<img src="https://www.kuleuven-kulak.be/kulakbiocampus/lage%20planten/Arabidopsis%20thaliana%20-%20Zandraket/Arabidopsis_thaliana-zandraket02.jpg" width=400>
+
 **TIPS:**
 * **Google is a programmer's best friend.**
 * **The best way to learn is to explore and figure out how to accomplish tasks on your own.**
