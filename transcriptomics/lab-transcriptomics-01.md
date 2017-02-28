@@ -51,7 +51,7 @@ We will be using [Trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki) 
 
 ## Assembly Assessment
 
-I introduced three different strategies to assess the quality of a transcriptome assembly. 
+During lecture I introduced three different strategies to assess the quality of a transcriptome assembly. 
 
 Strategy 1 | Strategy 2 | Strategy 3
 --- | --- | ---
