@@ -6,7 +6,7 @@ categories:
 
 # Transcriptomics Lab
 
-<img src="https://www.kuleuven-kulak.be/kulakbiocampus/lage%20planten/Arabidopsis%20thaliana%20-%20Zandraket/Arabidopsis_thaliana-zandraket02.jpg" width=400>
+<img src="https://cdn.brainpop.com/health/geneticsgrowthanddevelopment/rna/screenshot1.png" width=400>
 
 **TIPS:**
 * **Google is a programmer's best friend.**
@@ -22,6 +22,8 @@ Today we will be assembling a transcriptome and assessing its assembly quality v
 <br>
 
 ## Data Acquisition
+
+<img src="https://www.kuleuven-kulak.be/kulakbiocampus/lage%20planten/Arabidopsis%20thaliana%20-%20Zandraket/Arabidopsis_thaliana-zandraket02.jpg" width=400>
 
 We will be looking at Arabidopsis thaliana data because it has a smaller genome and will take less time in computational processes. The [data](https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP063471) is a **single-end** Illumina sequencing set with samples treated under salt stress, heat stress, and both. To simplify this, will only download one replicate each of the control samples and the heat stress samples. Each sample is about 3.5GB. You can download the SRA files from NCBI using sratoolkit:
 
