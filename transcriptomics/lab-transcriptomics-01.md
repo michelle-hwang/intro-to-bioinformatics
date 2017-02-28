@@ -4,6 +4,8 @@ categories:
   - lab
 ---
 
+# Transcriptomics Lab
+
 **TIPS:**
 * **Google is a programmer's best friend.**
 * **The best way to learn is to explore and figure out how to accomplish tasks on your own.**
