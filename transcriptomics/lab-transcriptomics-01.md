@@ -4,6 +4,13 @@ categories:
   - lab
 ---
 
+**TIPS:**
+* **Google is a programmer's best friend.**
+* **The best way to learn is to explore and figure out how to accomplish tasks on your own.**
+* **There are manuals for every command or software online.**
+
+<br>
+
 Today we will be assembling a transcriptome for Maize (*Zea mays*) and assessing its assembly quality via several different strategies. 
 
 ## Data Acquisition
@@ -18,6 +25,9 @@ for f in SRR2302908 SRR2302909 SRR2302910 SRR2302914 SRR2302915 SRR2302916; do
 done
 ```
 This will take some time, since the files are large. They are currently in *.fastq* format. 
+
+* Q1. What is the difference between *.fastq* and *.fasta* format?
+* Q2. How do we determine how many sequences are in each file? How many sequences are in each file?
 
 
 ## Transcriptome Assembly
