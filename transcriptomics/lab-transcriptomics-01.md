@@ -13,7 +13,7 @@ categories:
 
 <br>
 
-Today we will be assembling a transcriptome for Maize (*Zea mays*) and assessing its assembly quality via several different strategies. 
+Today we will be assembling a transcriptome and assessing its assembly quality via several different strategies. 
 
 ## Data Acquisition
 
