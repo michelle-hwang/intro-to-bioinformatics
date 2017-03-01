@@ -101,6 +101,8 @@ module load trinity/2.0.6-UGA
 time Trinity --seqType fq --max_memory 100G --CPU 12 --normalize_reads --output Trinity --single Ctrl.fq,Heat.fq 1>trinity.out 2>trinity.err 
 ```
 
+Submit this script to the queue with ```qsub run_trinity.sh```.
+
 To check on the status of your job, enter the command ```qstat```. If you see a "Q" for its status, that means the job is in the queue waiting to begin. If you see a "R", that means the job is currently running. If you see a "C", this means that the job is completed, but does not necessarily mean the job was completed correctly. 
 
 Once the computing job is complete, there will be a bunch of Trinity outfiles and also two outfiles related to your job submission: ```trinity.out``` and ```trinity.err```. The .out will show you anything that Trinity would have printed out onto the terminal for you to see. The .err file will show any warnings or errors associated with the computing job. If the job was not completed correctly or was completed instantly, it is likely that this file will help you troubleshoot. 
@@ -132,6 +134,8 @@ There are two alignment methods we will use to assess the assembly: read mapping
 
 #### Alignment to Reference Genome
 
+This method is only possible if there is a reference genome available. Even if the genome is not super high quality, there have been studies that have shown that this method can still generate useful results. 
+
 ```
 #!/bin/bash
 #PBS -N blat
@@ -147,6 +151,10 @@ time /usr/local/apps/blat/latest/bin/blat genome.fa Trinity.fasta -t=dna -q=rna 
 
 #### Read Mapping Rate
 
+A good assembly will have good representation of the RNA-Seq reads it was built from. Therefore, the higher the percentage of the reads should map back to this assembly, the better. *Think about it: why would some reads not map back to the assembly?*
+
+Trinity has its own script in its pipeline to help you map reads back to the assembly. Instructions to do so can be found [here](https://github.com/trinityrnaseq/trinityrnaseq/wiki/RNA-Seq-Read-Representation-by-Trinity-Assembly). 
+
 ```
 #!/bin/bash
 #PBS -N AnE
@@ -159,6 +167,7 @@ cd $PBS_O_WORKDIR
 module load trinity/2.0.6-UGA     
 align_and_estimate_abundance.pl --transcripts Trinity.fasta --seqType fq --est_method RSEM --output_dir AnE --aln_method bowtie2 --thread_count 8 --trinity_mode --prep_reference -single READS
 ```
+
 
 ### Strategy 2 - TransRate
 
@@ -182,12 +191,28 @@ time transrate --threads=4 --assembly=Trinity.fasta --output=raw-transrate
 
 [BUCSO](http://busco.ezlab.org/) is a software to assess the completeness of a assembly or gene set based on evolutionarily-informed expectations of gene content from near-universal single-copy orthologs from OrthoDB. In short terms, you will be aligning your assembly to a highly conserved set of proteins among plants. 
 
+BUSCO is available on Sapelo with instructions [here](https://wiki.gacrc.uga.edu/wiki/BUSCO-Sapelo), but you must download the BUSCO database for plants on the website. 
+
+An easy way to download things from websites is to use the ```wget``` command:
+
+```
+wget http://busco.ezlab.org/datasets/embryophyta_odb9.tar.gz
+```
+
+To unpack ```.tar.gz``` packages, which are files "zipped" up to conserve space, use a ```tar``` command:
+
+```
+tar -xvf embryophyta_odb9.tar.gz
+```
+
+With the database downloaded, you can create a submission script for busco and name it ```run_busco.sh```:
+
 ```
 #!/bin/bash
 #PBS -N busco
 #PBS -q batch
 #PBS -l walltime=128:00:00
-#PBS -l nodes=1:ppn=8:jlmnode
+#PBS -l nodes=1:ppn=8:HIGHMEM
 #PBS -l mem=10gb
 
 cd $PBS_O_WORKDIR
