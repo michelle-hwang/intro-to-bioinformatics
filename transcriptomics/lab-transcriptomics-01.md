@@ -13,13 +13,13 @@ categories:
 * **Google is a programmer's best friend.**
 * **The best way to learn is to explore and figure out how to accomplish tasks on your own.**
 * **There are manuals for every command or software online.**
-* **WARNING: DO NOT COPY/PASTE COMMANDS. One, there are invisible characters that can get copied, such as newlines or spaces, and can greatly mess up your command. Two, it's better to learn when you are typing out the command for yourself. 
+* **WARNING: DO NOT COPY/PASTE COMMANDS. One, there are invisible characters that can get copied, such as newlines or spaces, and can greatly mess up your command. Two, it's better to learn when you are typing out the command for yourself.**
 
 <br>
 
 Today we will be assembling a transcriptome and assessing its assembly quality via several different strategies. Please login to your Sapelo computing cluster account, start an interactive job, and create a new folder ```transcriptomics-lab```.  Go into this folder and then we can begin!
 
-* Q1. Why do we need to first start with an interactive job on the cluster?
+* Q1. *Why do we need to first start with an interactive job on the cluster?*
 
 <br>
 
@@ -38,9 +38,9 @@ done
 ```
 This will take some time, since the files are large. They are currently in *.fastq* format. The first two files are the control samples, and the last two files are the samples under heat stress. Please rename the files to: "Ctrl" and "Heat".
 
-* Q2. What command did you use to rename the files?
-* Q3. What is the difference between *.fastq* and *.fasta* format?
-* Q4. How do we determine how many sequences are in each file? How many sequences are in each file?
+* *Q2. What command did you use to rename the files?*
+* Q3. *What is the difference between *.fastq* and *.fasta* format?*
+* Q4. *How do we determine how many sequences are in each file? How many sequences are in each file?*
 
 <br>
 
@@ -48,7 +48,7 @@ This will take some time, since the files are large. They are currently in *.fas
 
 The original study that generated this data generated an assembly by aligning to the Arabidopsis genome as a reference. If a high quality referene genome is available, it is advantageous to utilize the reference when creating an assembly. Today, we will be assembling an assembly de novo without a reference. 
 
-* (BONUS) Q5. It is advantageous to use a reference genome to generate a transcriptome assembly, but what can a de novo assembly reveal that a reference assembly cannot?
+* *(BONUS) Q5. It is advantageous to use a reference genome to generate a transcriptome assembly, but what can a de novo assembly reveal that a reference assembly cannot?*
 
 <br>
 
@@ -72,7 +72,7 @@ time fastqc Trinity.fasta
 
 The analysis will spit out a .html file and a .zip file. In order to view the .html file, you must transfer it back to your own computer and double click it. 
 
-* Q. Why is there a heavy initial bias in kmer content near the beginning of the reads?
+* *Q. Why is there a heavy initial bias in kmer content near the beginning of the reads?*
 
 #### Adapter Removal and Quality Trimming
 
@@ -130,6 +130,23 @@ Alignment | TransRate | Orthology
 
 There are two alignment methods we will use to assess the assembly: read mapping rate and alignment to reference genome.
 
+#### Alignment to Reference Genome
+
+```
+#!/bin/bash
+#PBS -N blat
+#PBS -q batch
+#PBS -l nodes=1:ppn=1:HIGHMEM
+#PBS -l walltime=48:00:00
+#PBS -l mem=80gb
+
+cd $PBS_O_WORKDIR
+time /usr/local/apps/blat/latest/bin/blat genome.fa Trinity.fasta -t=dna -q=rna -fine Trinity.blat
+```
+
+
+#### Read Mapping Rate
+
 ```
 #!/bin/bash
 #PBS -N AnE
@@ -164,6 +181,25 @@ time transrate --threads=4 --assembly=Trinity.fasta --output=raw-transrate
 ### Strategy 3 - Orthology
 
 [BUCSO](http://busco.ezlab.org/) is a software to assess the completeness of a assembly or gene set based on evolutionarily-informed expectations of gene content from near-universal single-copy orthologs from OrthoDB. In short terms, you will be aligning your assembly to a highly conserved set of proteins among plants. 
+
+```
+#!/bin/bash
+#PBS -N busco
+#PBS -q batch
+#PBS -l walltime=128:00:00
+#PBS -l nodes=1:ppn=8:jlmnode
+#PBS -l mem=10gb
+
+cd $PBS_O_WORKDIR
+module load miniconda2/4.0.5
+export PATH="/usr/local/apps/augustus/latest/bin:$PATH"
+export PATH="/usr/local/apps/augustus/latest/scripts:$PATH"
+export AUGUSTUS_CONFIG_PATH="/usr/local/apps/augustus/latest/config/"
+
+source activate busco
+time python /usr/local/apps/miniconda2/4.0.5/envs/busco/bin/BUSCO_v1.2.py -in Trinity.fasta --mode trans -l embryophyta_odb9 -o Trinity.BUSCO.out -c 8
+source deactivate
+```
 
 <br>
 
