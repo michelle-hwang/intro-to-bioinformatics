@@ -30,7 +30,7 @@ We will be looking at Arabidopsis thaliana data because it has a smaller genome 
 ```
 module load sratoolkit
 
-for f in SRR2302908 SRR2302909 SRR2302914 SRR2302915; do
+for f in SRR2302908 SRR2302914; do
 	fastq-dump $f
 done
 ```
@@ -46,11 +46,12 @@ This will take some time, since the files are large. They are currently in *.fas
 
 ### Assembly Preparation
 
-Before assembling, the adapters must be removed from sequences. We will use [trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic) software to do this. Please visit the GACRC Wiki page for Trimmomatic [here](https://wiki.gacrc.uga.edu/wiki/Trimmomatic-Sapelo) to figure out what module(s) must be loaded to run this software.
+#### Adapter Removal and Quality Trimming
 
-```
-time java -jar /usr/local/apps/trimmomatic/0.33/trimmomatic-0.33.jar SE -threads 4 
-```
+Before assembling, the adapters must be removed from sequences. A popular program used for this is [trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic) and you can find the GACRC Wiki page for Trimmomatic [here](https://wiki.gacrc.uga.edu/wiki/Trimmomatic-Sapelo). Our data set is already trimmed, so we can skip this step.
+
+#### Removal of Artifacts
+
 
 ### Running the Assembly
 
@@ -67,4 +68,16 @@ During lecture I introduced three different strategies to assess the quality of 
 Strategy 1 | Strategy 2 | Strategy 3
 --- | --- | ---
 Alignment | TransRate | FASTQC
+
+### Strategy 1 - Alignment
+
+### Strategy 2 - TransRate
+
+### Strategy 3 - FASTQC
+
+<br>
+
+## Resources
+
+
 
