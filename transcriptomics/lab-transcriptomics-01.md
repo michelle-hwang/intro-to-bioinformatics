@@ -27,7 +27,7 @@ Today we will be assembling a transcriptome and assessing its assembly quality v
 
 <img src="https://www.kuleuven-kulak.be/kulakbiocampus/lage%20planten/Arabidopsis%20thaliana%20-%20Zandraket/Arabidopsis_thaliana-zandraket02.jpg" width=400>
 
-We will be looking at Arabidopsis thaliana data because it has a smaller genome and will take less time in computational processes. The [data](https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP063471) is a **single-end** Illumina sequencing set with leaf tissue samples treated under salt stress, heat stress, and both. To simplify this, will only download one replicate each of the control samples and the heat stress samples. Each sample is about 3.5GB. You can download the SRA files from NCBI using sratoolkit:
+We will be looking at Arabidopsis thaliana data because it has a smaller genome and will take less time in computational processes. The [data](https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP063471) is a **single-end** Illumina sequencing set with leaf tissue samples treated under salt stress, heat stress, and both. For full information on the study, click [here](https://www.ncbi.nlm.nih.gov//bioproject/PRJNA295091). To simplify our experiment because large data sets take a long time to compute, we will only download one replicate each of the control samples and the heat stress samples. (Note that this is highly discouraged and experiments should always have multiple replicates.) Each sample is about 3.5GB. You can download the SRA files from NCBI using sratoolkit:
 
 ```
 module load sratoolkit
@@ -36,11 +36,29 @@ for f in SRR2302908 SRR2302914; do
 	fastq-dump $f
 done
 ```
-This will take some time, since the files are large. They are currently in *.fastq* format. The first two files are the control samples, and the last two files are the samples under heat stress. Please rename the files to: "Ctrl" and "Heat".
 
-* *Q2. What command did you use to rename the files?*
-* Q3. *What is the difference between *.fastq* and *.fasta* format?*
-* Q4. *How do we determine how many sequences are in each file? How many sequences are in each file?*
+This will take some time, since the files are large. They are currently in *.fastq* format. The first two files are the control samples, and the last two files are the samples under heat stress. Please rename the files to: "Ctrl.fq" and "Heat.fq".
+
+There is a known issue with downloading SRA files from NCBI that have been converted to FASTQ. The conversion results in adding spaces in the header lines of the FASTQ file, which can mess up subsequent software analyses. To fix this, use this command:
+
+```
+sed 's/ /:/' Ctrl.fq | awk '{print $1}' > Ctrl.fixed.fq
+sed 's/ /:/' Heat.fq | awk '{print $1}' > Heat.fixed.fq
+# sed 's/ /:/' means we are replacing any instance of a space with a colon ":"
+# awk '{print $1}' means we are only going to print out the first column of every line in which columns are divided by whitespaces
+```
+
+If you would like to make things easier, let's get rid of the original unfixed files and rename our fixed files. You can use ```rm``` command to delete files and you can use the ```mv``` command to rename files.
+
+```
+rm Ctrl.fq
+rm Heat.fq
+mv Ctrl.fixed.fq Ctrl.fq
+mv Heat.fixed.fq Heat.fixed.fq
+```
+
+* Q2. *What is the difference between *.fastq* and *.fasta* format?*
+* Q3. *How do we determine how many sequences are in each file? How many sequences are in each file?*
 
 <br>
 
@@ -48,17 +66,17 @@ This will take some time, since the files are large. They are currently in *.fas
 
 <img src="https://raw.githubusercontent.com/wiki/trinityrnaseq/trinityrnaseq/images/TrinityCompositeLogo.png">
 
-The original study that generated this data generated an assembly by aligning to the Arabidopsis genome as a reference. If a high quality referene genome is available, it is advantageous to utilize the reference when creating an assembly. Today, we will be assembling an assembly de novo without a reference. 
+The original study that generated this data generated an assembly by aligning to the Arabidopsis genome as a reference. If a high quality referene genome is available, it is advantageous to utilize the reference when creating an assembly. Today, though, we will be assembling an assembly de novo without a reference. 
 
-* *(BONUS) Q5. It is advantageous to use a reference genome to generate a transcriptome assembly, but what can a de novo assembly reveal that a reference assembly cannot?*
+* Q4. *It is advantageous to use a reference genome to generate a transcriptome assembly, but what can a de novo assembly reveal that a reference assembly cannot?*
 
 <br>
 
 ### Assembly Preparation
 
-#### Assessing Sequencing Data
+#### Assessing Raw Data w/ FASTQC
 
-FASTQC
+It is always a good idea to assess the data you have received from the sequencer. While your assembly is running, you can use [FASTQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) software to quality check your reads. It runs fairly quickly and outputs graphics that can be immediately be interpreted for things like adapter contamination. Based on the results, you can run software to filter your assembly if needed. You can find instructions to run FASTQC on Sapelo [here](https://wiki.gacrc.uga.edu/wiki/FastQC-Sapelo). A default script could be as follows:
 
 ```
 #!/bin/bash
@@ -69,12 +87,11 @@ FASTQC
 
 cd $PBS_O_WORKDIR
 module load java/jdk1.8.0_20 fastqc
-time fastqc Trinity.fasta
+time fastqc Ctrl.fq
+time fastqc Heat.fq
 ```
 
 The analysis will spit out a .html file and a .zip file. In order to view the .html file, you must transfer it back to your own computer and double click it. 
-
-* *Q. Why is there a heavy initial bias in kmer content near the beginning of the reads?*
 
 #### Adapter Removal and Quality Trimming
 
@@ -86,11 +103,11 @@ Before assembling, the adapters must be removed from sequences. A popular progra
 
 We will be using [Trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki) to generate a transcriptome assembly, which is an extremely popular softare for RNA-Seq assembly and analysis with extensive tools and documentation. You can find instructions on how to use Trinity on Sapelo [here](https://wiki.gacrc.uga.edu/wiki/Trinity-Sapelo). 
 
-The assembly itself may take several hours, so we want to submit a shell script to the computing cluster queue instead of having it run interactively. Create a shell script file ```run_trinity.sh```.
-
 #### NOTE: Normalization
 
 As discussed in lecture, RNA-Seq experiences a unique problem over DNA sequencing because there is variation in expression of transcripts. Therefore, there will be the existence of lowly expressed/sequenced transcripts alongside very highly expressed/sequenced transcripts, which can cause a problem when estimating expression. This becomes more of a problem with increased number of reads. A solution to this is **digital normalization**, which sets a hard threshold for highly expressed transcripts at a specified cut-off, e.g. 5x coverage. Trinity has an in-silico normalization procedure that is built-in to the program and can be specified with the ```---normalize_reads``` flag so you don't need to do this yourself. Just be sure you know what it is doing. You can read more about it [here](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Trinity%20Insilico%20Normalization).
+
+The assembly itself may take several hours, so we want to submit a shell script to the computing cluster queue instead of having it run interactively. Create a shell script file ```run_trinity.sh```.
 
 ```
 #!/bin/bash
@@ -117,16 +134,17 @@ Congratulations! You've just generated an assembly!
 
 <br>
 
-* *Q6. What does it mean to set the CPU at 12 for the computing job?*
-* *Q7. What is a Trinity 'gene'? What is a Trinity 'isoform'?*
-* *Q8. If you ran the Trinity assembly over again using all the same files and parameters, would the assembly be different? Why?*
+* Q5. *Check the FASTQC output. Why is there a heavy initial bias in kmer content near the beginning of the reads? HINT: See the FASTQC manual.*
+* Q6. *What does it mean to set the CPU at 12 for the computing job?*
+* Q7. *What is a Trinity 'gene'? What is a Trinity 'isoform'?*
+* Q8. *If you ran the Trinity assembly over again using all the same files and parameters, would the assembly be different? Why?*
 
 <br>
 
 
 ## Assembly Assessment
 
-During lecture I introduced three different strategies to assess the quality of a transcriptome assembly. 
+During lecture I introduced three different strategies to assess the quality of a transcriptome assembly. Please evaluate your assembly using your assigned strategy.
 
 Strategy 1 | Strategy 2 | Strategy 3
 --- | --- | ---
