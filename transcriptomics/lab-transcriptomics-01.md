@@ -78,6 +78,8 @@ The analysis will spit out a .html file and a .zip file. In order to view the .h
 
 Before assembling, the adapters must be removed from sequences. A popular program used for this is [trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic) or [cutadapt](https://cutadapt.readthedocs.io/en/stable/), which are both available on the comuputing cluster. Each has extensive documentation so there are plenty of nice instructions to guide you through. Our data set is already trimmed, so we can skip this step.
 
+<br>
+
 ### Running the Assembly
 
 We will be using [Trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki) to generate a transcriptome assembly, which is an extremely popular softare for RNA-Seq assembly and analysis with extensive tools and documentation. You can find instructions on how to use Trinity on Sapelo [here](https://wiki.gacrc.uga.edu/wiki/Trinity-Sapelo). 
@@ -113,9 +115,9 @@ Congratulations! You've just generated an assembly!
 
 <br>
 
-* Q6. What does it mean to set the CPU at 12 for the computing job? 
-* Q7. What is a Trinity 'gene'? What is a Trinity 'isoform'?
-* Q8. If you ran the Trinity assembly over again using all the same files and parameters, would the assembly be different? Why?
+* *Q6. What does it mean to set the CPU at 12 for the computing job?*
+* *Q7. What is a Trinity 'gene'? What is a Trinity 'isoform'?*
+* *Q8. If you ran the Trinity assembly over again using all the same files and parameters, would the assembly be different? Why?*
 
 <br>
 
@@ -128,13 +130,23 @@ Strategy 1 | Strategy 2 | Strategy 3
 --- | --- | ---
 Alignment | TransRate | Orthology
 
+<br>
+
 ### Strategy 1 - Alignment
 
-There are two alignment methods we will use to assess the assembly: read mapping rate and alignment to reference genome.
+There are two alignment methods we will use to assess the assembly: read mapping rate and alignment to reference genome. This is likely to take the longest of all three strategies, so please make sure the alignment jobs are running before you leave lab.
 
 #### Alignment to Reference Genome
 
 This method is only possible if there is a reference genome available. Even if the genome is not super high quality, there have been studies that have shown that this method can still generate useful results. 
+
+First, we will need to download the Arabidopsis genome. TAIR is the major resource for Arabidopsis data and it is where you can download the latest version of the Arabidopsis genome.
+
+```
+wget https://www.arabidopsis.org/download_files/Genes/TAIR10_genome_release/TAIR10_chromosome_files/TAIR10_chr_all.fas
+```
+
+We will be using [BLAT](http://genome.cshlp.org/content/12/4/656.full), a BLAST-like alignment tool, to align our transcripts to the reference genome. It is available on Sapelo, instructions [here](https://wiki.gacrc.uga.edu/wiki/Blat-Sapelo). Please look at the parameter list to see what kinds of parameters you can customize.
 
 ```
 #!/bin/bash
@@ -145,9 +157,8 @@ This method is only possible if there is a reference genome available. Even if t
 #PBS -l mem=80gb
 
 cd $PBS_O_WORKDIR
-time /usr/local/apps/blat/latest/bin/blat genome.fa Trinity.fasta -t=dna -q=rna -fine Trinity.blat
+time /usr/local/apps/blat/latest/bin/blat genome.fa Trinity.fasta -t=dna -q=rna -fine TAIR10_chr_all.fas
 ```
-
 
 #### Read Mapping Rate
 
@@ -168,6 +179,7 @@ module load trinity/2.0.6-UGA
 align_and_estimate_abundance.pl --transcripts Trinity.fasta --seqType fq --est_method RSEM --output_dir AnE --aln_method bowtie2 --thread_count 8 --trinity_mode --prep_reference -single READS
 ```
 
+<br>
 
 ### Strategy 2 - TransRate
 
@@ -186,6 +198,7 @@ cd $PBS_O_WORKDIR
 module load transrate/1.0.1
 time transrate --threads=4 --assembly=Trinity.fasta --output=raw-transrate
 ```
+<br>
 
 ### Strategy 3 - Orthology
 
@@ -228,4 +241,6 @@ source deactivate
 
 <br>
 
+### Conclusions/Output
 
+Interpretation of the output of the assessment software can be aided by software manuals/documentation, as well as discussing with your group. 
