@@ -9,6 +9,7 @@ categories:
 <img src="https://cdn.brainpop.com/health/geneticsgrowthanddevelopment/rna/screenshot1.png" width=400>
 
 **TIPS:**
+* **THIS is a FANTASTIC guide with explanations for every step and consideration: https://en.wikibooks.org/wiki/Next_Generation_Sequencing_(NGS)**
 * **Google is a programmer's best friend.**
 * **The best way to learn is to explore and figure out how to accomplish tasks on your own.**
 * **There are manuals for every command or software online.**
@@ -48,7 +49,7 @@ This will take some time, since the files are large. They are currently in *.fas
 
 #### Adapter Removal and Quality Trimming
 
-Before assembling, the adapters must be removed from sequences. A popular program used for this is [trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic) or [cutadapt](https://cutadapt.readthedocs.io/en/stable/), which are both available on the comuputing cluster. Our data set is already trimmed, so we can skip this step.
+Before assembling, the adapters must be removed from sequences. A popular program used for this is [trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic) or [cutadapt](https://cutadapt.readthedocs.io/en/stable/), which are both available on the comuputing cluster. Each has extensive documentation so there are plenty of nice instructions to guide you through. Our data set is already trimmed, so we can skip this step.
 
 #### Removal of Artifacts
 
@@ -56,23 +57,30 @@ Before assembling, the adapters must be removed from sequences. A popular progra
 
 ### Running the Assembly
 
-We will be using [Trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki) to generate a transcriptome assembly. You can find instructions on how to use Trinity on Sapelo [here](https://wiki.gacrc.uga.edu/wiki/Trinity-Sapelo). 
+We will be using [Trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki) to generate a transcriptome assembly, which is an extremely popular softare for RNA-Seq assembly and analysis with extensive tools and documentation. You can find instructions on how to use Trinity on Sapelo [here](https://wiki.gacrc.uga.edu/wiki/Trinity-Sapelo). 
 
 The assembly itself may take several hours, so we want to submit a shell script to the computing cluster queue instead of having it run interactively. Create a shell script file ```run_trinity.sh```.
+
+#### NOTE: Normalization
+
+As discussed in lecture, RNA-Seq experiences a unique problem over DNA sequencing because there is variation in expression of transcripts. Therefore, there will be the existence of lowly expressed/sequenced transcripts alongside very highly expressed/sequenced transcripts, which can cause a problem when estimating expression. This becomes more of a problem with increased number of reads. A solution to this is **digital normalization**, which sets a hard threshold for highly expressed transcripts at a specified cut-off, e.g. 5x coverage. Trinity has an in-silico normalization procedure that is built-in to the program and can be specified with the ```---normalize_reads``` flag so you don't need to do this yourself. Just be sure you know what it is doing. You can read more about it [here](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Trinity%20Insilico%20Normalization).
 
 ```
 #!/bin/bash
 
 #PBS -N trinity
 #PBS -q batch
-#PBS -l nodes=1:ppn=16:HIGHMEM
+#PBS -l nodes=1:ppn=12:HIGHMEM
 #PBS -l walltime=480:00:00
 #PBS -l mem=100gb
 
 cd $PBS_O_WORKDIR
 module load trinity/2.0.6-UGA      
-time Trinity --seqType fq --max_memory 100G --CPU 12 --normalize_reads --normalize_by_read_set --output Trinity --single Ctrl.fq,Heat.fq 1>trinity.out 2>trinity.err 
+time Trinity --seqType fq --max_memory 100G --CPU 12 --normalize_reads --output Trinity --single Ctrl.fq,Heat.fq 1>trinity.out 2>trinity.err 
 ```
+
+* Q. What does it mean to set the CPU at 12? 
+* Q. 
 
 <br>
 
@@ -135,8 +143,5 @@ The analysis will spit out a .html file and a .zip file. In order to view the .h
 * Q. Why is there a heavy initial bias in kmer content near the beginning of the reads?
 
 <br>
-
-## Resources
-
 
 
