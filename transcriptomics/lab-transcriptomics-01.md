@@ -25,7 +25,7 @@ Today we will be assembling a transcriptome and assessing its assembly quality v
 
 <img src="https://www.kuleuven-kulak.be/kulakbiocampus/lage%20planten/Arabidopsis%20thaliana%20-%20Zandraket/Arabidopsis_thaliana-zandraket02.jpg" width=400>
 
-We will be looking at Arabidopsis thaliana data because it has a smaller genome and will take less time in computational processes. The [data](https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP063471) is a **single-end** Illumina sequencing set with samples treated under salt stress, heat stress, and both. To simplify this, will only download one replicate each of the control samples and the heat stress samples. Each sample is about 3.5GB. You can download the SRA files from NCBI using sratoolkit:
+We will be looking at Arabidopsis thaliana data because it has a smaller genome and will take less time in computational processes. The [data](https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP063471) is a **single-end** Illumina sequencing set with leaf tissue samples treated under salt stress, heat stress, and both. To simplify this, will only download one replicate each of the control samples and the heat stress samples. Each sample is about 3.5GB. You can download the SRA files from NCBI using sratoolkit:
 
 ```
 module load sratoolkit
@@ -48,15 +48,33 @@ This will take some time, since the files are large. They are currently in *.fas
 
 #### Adapter Removal and Quality Trimming
 
-Before assembling, the adapters must be removed from sequences. A popular program used for this is [trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic) and you can find the GACRC Wiki page for Trimmomatic [here](https://wiki.gacrc.uga.edu/wiki/Trimmomatic-Sapelo). Our data set is already trimmed, so we can skip this step.
+Before assembling, the adapters must be removed from sequences. A popular program used for this is [trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic) or [cutadapt](https://cutadapt.readthedocs.io/en/stable/), which are both available on the comuputing cluster. Our data set is already trimmed, so we can skip this step.
 
 #### Removal of Artifacts
 
 
+
 ### Running the Assembly
 
-We will be using [Trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki) to generate a transcriptome assembly. 
+We will be using [Trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki) to generate a transcriptome assembly. You can find instructions on how to use Trinity on Sapelo [here](https://wiki.gacrc.uga.edu/wiki/Trinity-Sapelo). 
 
+The assembly itself may take several hours, so we want to submit a shell script to the computing cluster queue instead of having it run interactively. Create a shell script file ```run_trinity.sh```.
+
+```
+#!/bin/bash
+
+#PBS -N trinity
+#PBS -q batch
+#PBS -l nodes=1:ppn=16:HIGHMEM
+#PBS -l walltime=480:00:00
+#PBS -l mem=100gb
+
+module load trinity/2.0.6-UGA      
+
+cd $PBS_O_WORKDIR
+
+time Trinity --seqType fq --max_memory 100G --CPU 12 --normalize_reads --normalize_by_read_set --output Trinity --single Ctrl.fq,Heat.fq 1>trinity.out 2>trinity.err 
+```
 
 <br>
 
@@ -74,6 +92,8 @@ Alignment | TransRate | FASTQC
 ### Strategy 2 - TransRate
 
 ### Strategy 3 - FASTQC
+
+* Q. Why is there a heavy initial bias in kmer content near the beginning of the reads?
 
 <br>
 
