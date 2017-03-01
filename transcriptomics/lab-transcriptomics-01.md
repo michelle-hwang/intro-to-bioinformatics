@@ -69,10 +69,8 @@ The assembly itself may take several hours, so we want to submit a shell script 
 #PBS -l walltime=480:00:00
 #PBS -l mem=100gb
 
-module load trinity/2.0.6-UGA      
-
 cd $PBS_O_WORKDIR
-
+module load trinity/2.0.6-UGA      
 time Trinity --seqType fq --max_memory 100G --CPU 12 --normalize_reads --normalize_by_read_set --output Trinity --single Ctrl.fq,Heat.fq 1>trinity.out 2>trinity.err 
 ```
 
@@ -89,9 +87,50 @@ Alignment | TransRate | FASTQC
 
 ### Strategy 1 - Alignment
 
+```
+#!/bin/bash
+
+#PBS -N AnE
+#PBS -q batch
+#PBS -l nodes=1:ppn=8:HIGHMEM
+#PBS -l walltime=480:00:00
+#PBS -l mem=100gb
+
+cd $PBS_O_WORKDIR
+module load trinity/2.0.6-UGA     
+align_and_estimate_abundance.pl --transcripts Trinity.fasta --seqType fq --est_method RSEM --output_dir AnE --aln_method bowtie2 --thread_count 8 --trinity_mode --prep_reference -single READS
+```
+
 ### Strategy 2 - TransRate
 
+```
+#!/bin/bash
+
+#PBS -N transrate
+#PBS -q batch
+#PBS -l nodes=1:ppn=4
+#PBS -l walltime=480:00:00
+
+cd $PBS_O_WORKDIR
+module load transrate/1.0.1
+time transrate --threads=4 --assembly=Trinity.fasta --output=raw-transrate
+```
+
 ### Strategy 3 - FASTQC
+
+```
+#!/bin/bash
+#PBS -q fastqc
+#PBS -l nodes=1:ppn=1:AMD
+#PBS -l walltime=480:00:00
+#PBS -l mem=80gb
+
+cd $PBS_O_WORKDIR
+module load java/jdk1.8.0_20 fastqc
+time fastqc Trinity.fasta
+```
+
+The analysis will spit out a .html file and a .zip file. In order to view the .html file, you must transfer it back to your own computer and double click it. 
 
 * Q. Why is there a heavy initial bias in kmer content near the beginning of the reads?
 
