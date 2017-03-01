@@ -46,6 +46,8 @@ This will take some time, since the files are large. They are currently in *.fas
 
 ## Transcriptome Assembly
 
+<img src="https://raw.githubusercontent.com/wiki/trinityrnaseq/trinityrnaseq/images/TrinityCompositeLogo.png">
+
 The original study that generated this data generated an assembly by aligning to the Arabidopsis genome as a reference. If a high quality referene genome is available, it is advantageous to utilize the reference when creating an assembly. Today, we will be assembling an assembly de novo without a reference. 
 
 * *(BONUS) Q5. It is advantageous to use a reference genome to generate a transcriptome assembly, but what can a de novo assembly reveal that a reference assembly cannot?*
