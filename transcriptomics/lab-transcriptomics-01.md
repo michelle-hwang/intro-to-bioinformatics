@@ -17,7 +17,7 @@ categories:
 
 <br>
 
-Today we will be assembling a transcriptome and assessing its assembly quality via several different strategies. Please login to your Sapelo computing cluster account, start an interactive job, and create a new folder ```transcriptomics-lab```.  Go into this folder and then we can begin!
+Today we will be assembling a transcriptome and assessing its assembly quality via several different strategies. Please login to your Zcluster computing cluster account, start an interactive job, and create a new folder ```transcriptomics-lab```.  Go into this folder and then we can begin!
 
 * Q1. *Why do we need to first start with an interactive job on the cluster?*
 
@@ -30,10 +30,8 @@ Today we will be assembling a transcriptome and assessing its assembly quality v
 We will be looking at Arabidopsis thaliana data because it has a smaller genome and will take less time in computational processes. The [data](https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP063471) is a **single-end** Illumina sequencing set with leaf tissue samples treated under salt stress, heat stress, and both. For full information on the study, click [here](https://www.ncbi.nlm.nih.gov//bioproject/PRJNA295091). To simplify our experiment because large data sets take a long time to compute, we will only download one replicate each of the control samples and the heat stress samples. (Note that this is highly discouraged and experiments should always have multiple replicates.) Each sample is about 3.5GB. You can download the SRA files from NCBI using sratoolkit:
 
 ```
-module load sratoolkit
-
 for f in SRR2302908 SRR2302914; do
-	fastq-dump $f
+	/usr/local/sra/latest/bin/fastq-dump $f
 done
 ```
 
@@ -76,19 +74,12 @@ The original study that generated this data generated an assembly by aligning to
 
 #### Assessing Raw Data w/ FASTQC
 
-It is always a good idea to assess the data you have received from the sequencer. While your assembly is running, you can use [FASTQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) software to quality check your reads. It runs fairly quickly and outputs graphics that can be immediately be interpreted for things like adapter contamination. Based on the results, you can run software to filter your assembly if needed. You can find instructions to run FASTQC on Sapelo [here](https://wiki.gacrc.uga.edu/wiki/FastQC-Sapelo). A default script could be as follows:
+It is always a good idea to assess the data you have received from the sequencer. While your assembly is running, you can use [FASTQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) software to quality check your reads. It runs fairly quickly and outputs graphics that can be immediately be interpreted for things like adapter contamination. Based on the results, you can run software to filter your assembly if needed. You can find instructions to run FASTQC on Zcluster [here](https://wiki.gacrc.uga.edu/wiki/FastQC). A default script could be as follows:
 
 ```
 #!/bin/bash
-#PBS -q fastqc
-#PBS -l nodes=1:ppn=1:AMD
-#PBS -l walltime=480:00:00
-#PBS -l mem=80gb
-
-cd $PBS_O_WORKDIR
-module load java/jdk1.8.0_20 fastqc
-time fastqc Ctrl.fq
-time fastqc Heat.fq
+export PATH=${PATH}:/usr/local/fastqc/latest/
+time /usr/local/fastqc/latest/fastqc Ctrl.fq
 ```
 
 The analysis will spit out a .html file and a .zip file. In order to view the .html file, you must transfer it back to your own computer and double click it. 
@@ -101,7 +92,7 @@ Before assembling, the adapters must be removed from sequences. A popular progra
 
 ### Running the Assembly
 
-We will be using [Trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki) to generate a transcriptome assembly, which is an extremely popular softare for RNA-Seq assembly and analysis with extensive tools and documentation. You can find instructions on how to use Trinity on Sapelo [here](https://wiki.gacrc.uga.edu/wiki/Trinity-Sapelo). 
+We will be using [Trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki) to generate a transcriptome assembly, which is an extremely popular softare for RNA-Seq assembly and analysis with extensive tools and documentation. You can find instructions on how to use Trinity on Zcluster [here](https://wiki.gacrc.uga.edu/wiki/Trinity). 
 
 #### NOTE: Normalization
 
@@ -111,18 +102,12 @@ The assembly itself may take several hours, so we want to submit a shell script 
 
 ```
 #!/bin/bash
-#PBS -N trinity
-#PBS -q batch
-#PBS -l nodes=1:ppn=12:HIGHMEM
-#PBS -l walltime=480:00:00
-#PBS -l mem=100gb
-
-cd $PBS_O_WORKDIR
-module load trinity/2.0.6-UGA      
-time Trinity --seqType fq --max_memory 100G --CPU 12 --normalize_reads --output Trinity --single Ctrl.fq,Heat.fq 1>trinity.out 2>trinity.err 
+export LD_LIBRARY_PATH=/usr/local/gcc/4.7.1/lib:/usr/local/gcc/4.7.1/lib64:${LD_LIBRARY_PATH}
+export PATH=/usr/local/gmap-gsnap/latest/bin/:${PATH}    
+time /usr/local/trinity/2.0.6/Trinity --seqType fq --max_memory 100G --CPU 12 --normalize_reads --output Trinity --single Ctrl.fq,Heat.fq 1>trinity.out 2>trinity.err 
 ```
 
-Submit this script to the queue with ```qsub run_trinity.sh```.
+Submit this script to the queue with ```qsub -q rcc-30d -pe thread 12 run_trinity.sh```.
 
 To check on the status of your job, enter the command ```qstat```. If you see a "Q" for its status, that means the job is in the queue waiting to begin. If you see a "R", that means the job is currently running. If you see a "C", this means that the job is completed, but does not necessarily mean the job was completed correctly. 
 
@@ -166,18 +151,11 @@ First, we will need to download the Arabidopsis genome. TAIR is the major resour
 wget https://www.arabidopsis.org/download_files/Genes/TAIR10_genome_release/TAIR10_chromosome_files/TAIR10_chr_all.fas
 ```
 
-We will be using [BLAT](http://genome.cshlp.org/content/12/4/656.full), a BLAST-like alignment tool, to align our transcripts to the reference genome. It is available on Sapelo, instructions [here](https://wiki.gacrc.uga.edu/wiki/Blat-Sapelo). Please look at the parameter list to see what kinds of parameters you can customize.
+We will be using [BLAT](http://genome.cshlp.org/content/12/4/656.full), a BLAST-like alignment tool, to align our transcripts to the reference genome. It is available on Zcluster, instructions [here](https://wiki.gacrc.uga.edu/wiki/Blat). Please look at the parameter list to see what kinds of parameters you can customize.
 
 ```
 #!/bin/bash
-#PBS -N blat
-#PBS -q batch
-#PBS -l nodes=1:ppn=1:HIGHMEM
-#PBS -l walltime=48:00:00
-#PBS -l mem=80gb
-
-cd $PBS_O_WORKDIR
-time /usr/local/apps/blat/latest/bin/blat genome.fa Trinity.fasta -t=dna -q=rna -fine TAIR10_chr_all.fas
+time /usr/local/blat/latest/bin/blat genome.fa Trinity.fasta -t=dna -q=rna -fine TAIR10_chr_all.fas
 ```
 
 #### Read Mapping Rate
@@ -187,16 +165,8 @@ A good assembly will have good representation of the RNA-Seq reads it was built 
 Trinity has its own script in its pipeline to help you map reads back to the assembly. Instructions to do so can be found [here](https://github.com/trinityrnaseq/trinityrnaseq/wiki/RNA-Seq-Read-Representation-by-Trinity-Assembly). 
 
 ```
-#!/bin/bash
-#PBS -N AnE
-#PBS -q batch
-#PBS -l nodes=1:ppn=8:HIGHMEM
-#PBS -l walltime=480:00:00
-#PBS -l mem=100gb
-
-cd $PBS_O_WORKDIR
-module load trinity/2.0.6-UGA     
-align_and_estimate_abundance.pl --transcripts Trinity.fasta --seqType fq --est_method RSEM --output_dir AnE --aln_method bowtie2 --thread_count 8 --trinity_mode --prep_reference -single READS
+#!/bin/bash 
+/usr/local/trinity/latest/util/align_and_estimate_abundance.pl --transcripts Trinity.fasta --seqType fq --est_method RSEM --output_dir AnE --aln_method bowtie2 --thread_count 8 --trinity_mode --prep_reference -single READS
 ```
 
 <br>
@@ -205,17 +175,11 @@ align_and_estimate_abundance.pl --transcripts Trinity.fasta --seqType fq --est_m
 
 Bioinformatics is constantly improving with new advances in software in technology. A recent new software called TransRate was introduced as a software to assess the quality of a transcriptome assembly. You can read the published paper on it [here](http://genome.cshlp.org/content/early/2016/06/01/gr.196469.115). Otherwise, instructions on how to use and interpret it can be found on its [website](http://hibberdlab.com/transrate/index.html). 
 
-TransRate is also on Sapelo, so you can find instructions on the GACRC wiki [here](https://wiki.gacrc.uga.edu/wiki/Transrate-Sapelo). The default shell script to run TransRate can be found below, but please see the TransRate manual to customize your results and explore what it can do/tell you. 
+TransRate is on Sapelo but not Zcluster, but you can find instructions for Sapelo on the GACRC wiki [here](https://wiki.gacrc.uga.edu/wiki/Transrate-Sapelo). The default shell script to run TransRate can be found below, but please see the TransRate manual to customize your results and explore what it can do/tell you. 
 
 ```
 #!/bin/bash
-#PBS -N transrate
-#PBS -q batch
-#PBS -l nodes=1:ppn=4
-#PBS -l walltime=480:00:00
 
-cd $PBS_O_WORKDIR
-module load transrate/1.0.1
 time transrate --threads=4 --assembly=Trinity.fasta --output=raw-transrate
 ```
 <br>
