@@ -224,4 +224,9 @@ source deactivate
 
 ### Conclusions/Output
 
-Interpretation of the output of the assessment software can be aided by software manuals/documentation, as well as discussing with your group. 
+Interpretation of the output of the assessment software can be aided by software manuals/documentation, as well as discussing with your group. Please develop criteria to evaluate each strategy to fill in a table. For example:
+
+Criteria | Strategy 1 | Strategy 2 | Strategy 3
+--- | --- | --- | --- 
+Documentation | TEXT | TEXT | TEXT 
+Efficiency | TEXT | TEXT | TEXT
