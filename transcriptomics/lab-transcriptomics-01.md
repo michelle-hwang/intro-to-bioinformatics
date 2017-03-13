@@ -19,8 +19,6 @@ categories:
 
 Today we will be assembling a transcriptome and assessing its assembly quality via several different strategies. Please login to your Zcluster computing cluster account, start an interactive job, and create a new folder ```transcriptomics-lab```.  Go into this folder and then we can begin!
 
-* Q1. *Why do we need to first start with an interactive job on the cluster?*
-
 <br>
 
 ## Data Acquisition
@@ -55,8 +53,8 @@ mv Ctrl.fixed.fq Ctrl.fq
 mv Heat.fixed.fq Heat.fixed.fq
 ```
 
-* Q2. *What is the difference between *.fastq* and *.fasta* format?*
-* Q3. *How do we determine how many sequences are in each file? How many sequences are in each file?*
+* Q1. *What is the difference between *.fastq* and *.fasta* format?*
+* Q2. *How do we determine how many sequences are in each file? How many sequences are in each file?*
 
 <br>
 
@@ -66,7 +64,6 @@ mv Heat.fixed.fq Heat.fixed.fq
 
 The original study that generated this data generated an assembly by aligning to the Arabidopsis genome as a reference. If a high quality referene genome is available, it is advantageous to utilize the reference when creating an assembly. Today, though, we will be assembling an assembly de novo without a reference. 
 
-* Q4. *It is advantageous to use a reference genome to generate a transcriptome assembly, but what can a de novo assembly reveal that a reference assembly cannot?*
 
 <br>
 
@@ -119,10 +116,10 @@ Congratulations! You've just generated an assembly!
 
 <br>
 
-* Q5. *Check the FASTQC output. Why is there a heavy initial bias in kmer content near the beginning of the reads? HINT: See the FASTQC manual.*
-* Q6. *What does it mean to set the CPU at 12 for the computing job?*
-* Q7. *What is a Trinity 'gene'? What is a Trinity 'isoform'?*
-* Q8. *If you ran the Trinity assembly over again using all the same files and parameters, would the assembly be different? Why?*
+* Q3. *Check the FASTQC output. Why is there a heavy initial bias in kmer content near the beginning of the reads? HINT: See the FASTQC manual.*
+* Q4. *What does it mean to set the CPU at 12 for the computing job?*
+* Q5. *What is a Trinity 'gene'? What is a Trinity 'isoform'?*
+* Q6. *If you ran the Trinity assembly over again using all the same files and parameters, would the assembly be different? Why?*
 
 <br>
 
