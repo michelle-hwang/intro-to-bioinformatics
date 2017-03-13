@@ -31,7 +31,7 @@ We will be looking at Arabidopsis thaliana data because it has a smaller genome 
 
 ```
 for f in SRR2302908 SRR2302914; do
-	/usr/local/sra/latest/bin/fastq-dump $f
+	fastq-dump $f
 done
 ```
 
