@@ -71,12 +71,12 @@ The original study that generated this data generated an assembly by aligning to
 
 #### Assessing Raw Data w/ FASTQC
 
-It is always a good idea to assess the data you have received from the sequencer. While your assembly is running, you can use [FASTQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) software to quality check your reads. It runs fairly quickly and outputs graphics that can be immediately be interpreted for things like adapter contamination. Based on the results, you can run software to filter your assembly if needed. You can find instructions to run FASTQC on Zcluster [here](https://wiki.gacrc.uga.edu/wiki/FastQC). A default script could be as follows:
+It is always a good idea to assess the data you have received from the sequencer. While your assembly is running, you can use [FASTQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) software to quality check your reads. It runs fairly quickly and outputs graphics that can be immediately be interpreted for things like adapter contamination. Based on the results, you can run software to filter your assembly if needed. You can find instructions to run FASTQC on Zcluster [here](https://wiki.gacrc.uga.edu/wiki/FastQC). A default script could be as follows (~30 min):
 
 ```
 #!/bin/bash
 export PATH=${PATH}:/usr/local/fastqc/latest/
-time /usr/local/fastqc/latest/fastqc Ctrl.fq
+time /usr/local/fastqc/latest/fastqc Heat.fq
 ```
 
 The analysis will spit out a .html file and a .zip file. In order to view the .html file, you must transfer it back to your own computer and double click it. 
