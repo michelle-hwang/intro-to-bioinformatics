@@ -101,10 +101,10 @@ The assembly itself may take several hours, so we want to submit a shell script 
 #!/bin/bash
 export LD_LIBRARY_PATH=/usr/local/gcc/4.7.1/lib:/usr/local/gcc/4.7.1/lib64:${LD_LIBRARY_PATH}
 export PATH=/usr/local/gmap-gsnap/latest/bin/:${PATH}    
-time /usr/local/trinity/2.0.6/Trinity --seqType fq --max_memory 100G --CPU 12 --normalize_reads --output Trinity --single Ctrl.fq,Heat.fq 1>trinity.out 2>trinity.err 
+time /usr/local/trinity/2.0.6/Trinity --seqType fq --max_memory 75G --CPU 8 --normalize_reads --output Trinity --single Ctrl.fq,Heat.fq 1>trinity.out 2>trinity.err 
 ```
 
-Submit this script to the queue with ```qsub -q rcc-30d -pe thread 12 run_trinity.sh```.
+Submit this script to the queue with ```qsub -q rcc-30d -pe thread 8 run_trinity.sh```.
 
 To check on the status of your job, enter the command ```qstat```. If you see a "Q" for its status, that means the job is in the queue waiting to begin. If you see a "R", that means the job is currently running. If you see a "C", this means that the job is completed, but does not necessarily mean the job was completed correctly. 
 
@@ -117,7 +117,7 @@ Congratulations! You've just generated an assembly!
 <br>
 
 * Q3. *Check the FASTQC output. Why is there a heavy initial bias in kmer content near the beginning of the reads? HINT: See the FASTQC manual.*
-* Q4. *What does it mean to set the CPU at 12 for the computing job?*
+* Q4. *What does it mean to set the CPU at 8 for the computing job?*
 * Q5. *What is a Trinity 'gene'? What is a Trinity 'isoform'?*
 * Q6. *If you ran the Trinity assembly over again using all the same files and parameters, would the assembly be different? Why?*
 
@@ -155,6 +155,8 @@ We will be using [BLAT](http://genome.cshlp.org/content/12/4/656.full), a BLAST-
 time /usr/local/blat/latest/bin/blat genome.fa Trinity.fasta -t=dna -q=rna -fine TAIR10_chr_all.fas
 ```
 
+> This will take some time to run, so see output "OUTPUTNAMEHERE"
+
 #### Read Mapping Rate
 
 A good assembly will have good representation of the RNA-Seq reads it was built from. Therefore, the higher the percentage of the reads should map back to this assembly, the better. *Think about it: why would some reads not map back to the assembly?*
@@ -165,6 +167,7 @@ Trinity has its own script in its pipeline to help you map reads back to the ass
 #!/bin/bash 
 /usr/local/trinity/latest/util/align_and_estimate_abundance.pl --transcripts Trinity.fasta --seqType fq --est_method RSEM --output_dir AnE --aln_method bowtie2 --thread_count 8 --trinity_mode --prep_reference -single READS
 ```
+> This will take some time to run, so see output "OUTPUTNAMEHERE"
 
 <br>
 
@@ -179,6 +182,9 @@ TransRate is on Sapelo but not Zcluster, but you can find instructions for Sapel
 
 time transrate --threads=4 --assembly=Trinity.fasta --output=raw-transrate
 ```
+
+> This software is not available on Zcluster, so see output "OUTPUTNAMEHERE"
+
 <br>
 
 ### Strategy 3 - Orthology
@@ -203,21 +209,13 @@ With the database downloaded, you can create a submission script for busco and n
 
 ```
 #!/bin/bash
-#PBS -N busco
-#PBS -q batch
-#PBS -l walltime=128:00:00
-#PBS -l nodes=1:ppn=8:HIGHMEM
-#PBS -l mem=10gb
 
 cd $PBS_O_WORKDIR
-module load miniconda2/4.0.5
 export PATH="/usr/local/apps/augustus/latest/bin:$PATH"
 export PATH="/usr/local/apps/augustus/latest/scripts:$PATH"
 export AUGUSTUS_CONFIG_PATH="/usr/local/apps/augustus/latest/config/"
 
-source activate busco
 time python /usr/local/apps/miniconda2/4.0.5/envs/busco/bin/BUSCO_v1.2.py -in Trinity.fasta --mode trans -l embryophyta_odb9 -o Trinity.BUSCO.out -c 8
-source deactivate
 ```
 
 <br>
