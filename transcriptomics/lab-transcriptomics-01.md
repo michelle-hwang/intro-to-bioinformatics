@@ -157,6 +157,7 @@ time /usr/local/blat/latest/bin/blat genome.fa Trinity.fasta -t=dna -q=rna -fine
 
 > This will take some time to run, so see output "OUTPUTNAMEHERE"
 
+
 #### Read Mapping Rate
 
 A good assembly will have good representation of the RNA-Seq reads it was built from. Therefore, the higher the percentage of the reads should map back to this assembly, the better. *Think about it: why would some reads not map back to the assembly?*
@@ -205,17 +206,16 @@ To unpack ```.tar.gz``` packages, which are files "zipped" up to conserve space,
 tar -xvf embryophyta_odb9.tar.gz
 ```
 
-With the database downloaded, you can create a submission script for busco and name it ```run_busco.sh```:
+With the database downloaded, you can create a submission script for busco and name it ```run_busco.sh```. It should take approximately 15 minutes to run. If you messed up after the first submission, add "-f" to your command to overwrite previous runs.
 
 ```
 #!/bin/bash
-
 cd $PBS_O_WORKDIR
-export PATH="/usr/local/apps/augustus/latest/bin:$PATH"
-export PATH="/usr/local/apps/augustus/latest/scripts:$PATH"
-export AUGUSTUS_CONFIG_PATH="/usr/local/apps/augustus/latest/config/"
+export PATH="/usr/local/augustus/latest/bin:$PATH"
+export PATH="/usr/local/augustus/latest/scripts:$PATH"
+export AUGUSTUS_CONFIG_PATH="/usr/local/augustus/latest/config/"
 
-time python /usr/local/apps/miniconda2/4.0.5/envs/busco/bin/BUSCO_v1.2.py -in Trinity.fasta --mode trans -l embryophyta_odb9 -o Trinity.BUSCO.out -c 8
+time /usr/local/python/2.7.8 BUSCO_v1.2.py -in Trinity.fasta --mode trans -l embryophyta_odb9 -o Trinity.BUSCO.out -c 8
 ```
 
 <br>
