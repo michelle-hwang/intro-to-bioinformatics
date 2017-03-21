@@ -153,7 +153,7 @@ We will be using [BLAT](http://genome.cshlp.org/content/12/4/656.full), a BLAST-
 time /usr/local/blat/latest/bin/blat genome.fa Trinity.fasta -t=dna -q=rna -fine TAIR10_chr_all.fas
 ```
 
-> This will take some time to run, so see output "OUTPUTNAMEHERE"
+> This will take some time to run (~30 min), so see folder "BLAT-output"
 
 
 #### Read Mapping Rate
@@ -166,7 +166,7 @@ Trinity has its own script in its pipeline to help you map reads back to the ass
 #!/bin/bash 
 /usr/local/trinity/latest/util/align_and_estimate_abundance.pl --transcripts Trinity.fasta --seqType fq --est_method RSEM --output_dir AnE --aln_method bowtie2 --thread_count 8 --trinity_mode --prep_reference -single READS
 ```
-> This will take some time to run, so see output "OUTPUTNAMEHERE"
+> This will take some time to run, so see folder "AnE-output"
 
 <br>
 
@@ -182,7 +182,7 @@ TransRate is on Sapelo but not Zcluster, but you can find instructions for Sapel
 time transrate --threads=4 --assembly=Trinity.fasta --output=raw-transrate
 ```
 
-> This software is not available on Zcluster, so see output "OUTPUTNAMEHERE"
+> This software is not available on Zcluster, so see folder "transrate-output"
 
 <br>
 
@@ -216,7 +216,7 @@ export AUGUSTUS_CONFIG_PATH="/usr/local/augustus/latest/config/"
 time /usr/local/python/2.7.8 BUSCO_v1.2.py -in Trinity.fasta --mode trans -l embryophyta_odb9 -o Trinity.BUSCO.out -c 8
 ```
 
-> This software is not available on Zcluster, so see output "OUTPUTNAMEHERE"
+> This software is not available on Zcluster, so see folder "BUSCO-output"
 
 <br>
 
