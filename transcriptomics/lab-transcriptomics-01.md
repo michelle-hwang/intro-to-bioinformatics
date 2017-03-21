@@ -10,8 +10,6 @@ categories:
 
 **TIPS:**
 * **THIS is a FANTASTIC guide with explanations for every step and consideration: https://en.wikibooks.org/wiki/Next_Generation_Sequencing_(NGS)**
-* **Google is a programmer's best friend.**
-* **The best way to learn is to explore and figure out how to accomplish tasks on your own.**
 * **There are manuals for every command or software online.**
 * **WARNING: DO NOT COPY/PASTE COMMANDS. One, there are invisible characters that can get copied, such as newlines or spaces, and can greatly mess up your command. Two, it's better to learn when you are typing out the command for yourself.**
 
@@ -217,6 +215,8 @@ export AUGUSTUS_CONFIG_PATH="/usr/local/augustus/latest/config/"
 
 time /usr/local/python/2.7.8 BUSCO_v1.2.py -in Trinity.fasta --mode trans -l embryophyta_odb9 -o Trinity.BUSCO.out -c 8
 ```
+
+> This software is not available on Zcluster, so see output "OUTPUTNAMEHERE"
 
 <br>
 
