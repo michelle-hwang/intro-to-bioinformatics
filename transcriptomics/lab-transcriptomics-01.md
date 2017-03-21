@@ -36,8 +36,8 @@ This will take some time, since the files are large. They are currently in *.fas
 There is a known issue with downloading SRA files from NCBI that have been converted to FASTQ. The conversion results in adding spaces in the header lines of the FASTQ file, which can mess up subsequent software analyses. To fix this, use this command:
 
 ```
-sed 's/ /:/' Ctrl.fq | awk '{print $1}' > Ctrl.fixed.fq
-sed 's/ /:/' Heat.fq | awk '{print $1}' > Heat.fixed.fq
+sed 's/ /#/' Ctrl.fq | awk '{print $1}' > Ctrl.fixed.fq
+sed 's/ /#/' Heat.fq | awk '{print $1}' > Heat.fixed.fq
 # sed 's/ /:/' means we are replacing any instance of a space with a colon ":"
 # awk '{print $1}' means we are only going to print out the first column of every line in which columns are divided by whitespaces
 ```
