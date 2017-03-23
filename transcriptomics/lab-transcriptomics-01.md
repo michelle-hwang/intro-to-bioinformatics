@@ -160,13 +160,20 @@ time /usr/local/blat/latest/bin/blat genome.fa Trinity.fasta -t=dna -q=rna -fine
 
 A good assembly will have good representation of the RNA-Seq reads it was built from. Therefore, the higher the percentage of the reads should map back to this assembly, the better. *Think about it: why would some reads not map back to the assembly?*
 
-Trinity has its own script in its pipeline to help you map reads back to the assembly. Instructions to do so can be found [here](https://github.com/trinityrnaseq/trinityrnaseq/wiki/RNA-Seq-Read-Representation-by-Trinity-Assembly). 
+Trinity has its own script in its pipeline to help you map reads back to the assembly. Instructions to do so can be found [here](https://github.com/trinityrnaseq/trinityrnaseq/wiki/RNA-Seq-Read-Representation-by-Trinity-Assembly). Here is an example of a script.
 
 ```
 #!/bin/bash 
-/usr/local/trinity/latest/util/align_and_estimate_abundance.pl --transcripts Trinity.fasta --seqType fq --est_method RSEM --output_dir AnE --aln_method bowtie2 --thread_count 8 --trinity_mode --prep_reference -single READS
+/usr/local/trinity/latest/util/align_and_estimate_abundance.pl --transcripts Trinity.fasta --seqType fq --est_method RSEM --output_dir AnE --aln_method bowtie2 --thread_count 8 --trinity_mode --prep_reference -single Heat.fq
 ```
-> This will take some time to run, so see folder "AnE-output"
+
+Submit it to the queue!
+
+```
+qsub -q rcc-30d -pe thread 8 run_AnE
+```
+
+> This will take some time to run (~30 min), so see folder "AnE-output."
 
 <br>
 
